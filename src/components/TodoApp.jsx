@@ -11,9 +11,9 @@ const TodoApp = () => {
     { completed: false, title: "Item #4" },
     { completed: true, title: "Item #5" },
   ]);
+  const [newItem, setNewItem] = useState("");
   const completeTodo = useCallback((todo) => {
     const todos = items.map((item) => {
-      console.log(todo.title);
       if (item === todo) {
         item.completed = !todo.completed;
       }
@@ -21,7 +21,6 @@ const TodoApp = () => {
     });
     setItems(todos);
   });
-  const [newItem, setNewItem] = useState("");
   const addItem = () => {
     if (newItem.length > 2) {
       setItems((item) => [...item, { completed: false, title: newItem }]);
@@ -30,16 +29,16 @@ const TodoApp = () => {
       alert("Entrer une tache valide");
     }
   };
+  const submitItem = useCallback((event) => {
+    event.preventDefault();
+    addItem();
+  });
   const deleteItem = (todo) => {
     const newItems = items.filter((item) => item !== todo);
     setItems(newItems);
   };
   const handleChange = (event) => {
     setNewItem(event.target.value);
-    console.log(newItem);
-    if (event.key === "Enter") {
-      addItem(newItem);
-    }
   };
   return (
     <div className="row">
@@ -62,31 +61,39 @@ const TodoApp = () => {
                 </TodoItem>
               ))}
           </ul>
-          <button className="flex items-center w-full h-8 px-2 mt-2 text-sm font-medium rounded">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="ionicon"
-              width={30}
-              height={30}
-              viewBox="0 0 512 512"
-            >
-              <path
-                d="M448 256c0-106-86-192-192-192S64 150 64 256s86 192 192 192 192-86 192-192z"
-                fill="none"
-                stroke="currentColor"
-                strokeMiterlimit={10}
-                strokeWidth={32}
-              />
-              <path
-                fill="none"
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={32}
-                d="M256 176v160M336 256H176"
-              />
-            </svg>
-
+          <p className="my-2">
+            {items.filter((item) => !item.completed).length} items restant
+          </p>
+          <form
+            onSubmit={submitItem}
+            method="POST"
+            className="flex items-center w-full h-8 px-2 mt-2 text-sm font-medium rounded"
+          >
+            <button onClick={submitItem}>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="ionicon"
+                width={30}
+                height={30}
+                viewBox="0 0 512 512"
+              >
+                <path
+                  d="M448 256c0-106-86-192-192-192S64 150 64 256s86 192 192 192 192-86 192-192z"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeMiterlimit={10}
+                  strokeWidth={32}
+                />
+                <path
+                  fill="none"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={32}
+                  d="M256 176v160M336 256H176"
+                />
+              </svg>
+            </button>
             <input
               className="flex-grow h-8 ml-4 font-medium bg-transparent focus:outline-none"
               type="text"
@@ -95,7 +102,7 @@ const TodoApp = () => {
               onKeyDown={handleChange}
               placeholder="add a new task"
             />
-          </button>
+          </form>
         </div>
       </div>
 
@@ -119,6 +126,9 @@ const TodoApp = () => {
                 </TodoItem>
               ))}
           </ul>
+          <p className="my-2">
+            {items.filter((item) => item.completed).length} taches terminées
+          </p>
         </div>
       </div>
     </div>
