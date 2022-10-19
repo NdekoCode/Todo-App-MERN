@@ -5,13 +5,7 @@ import TodoItem from "./TodoItem";
 
 const TodoApp = () => {
   const [state, setstate] = useState({
-    todos: [
-      { completed: true, title: "Item #1" },
-      { completed: true, title: "Item #2" },
-      { completed: false, title: "Item #3" },
-      { completed: false, title: "Item #4" },
-      { completed: true, title: "Item #5" },
-    ],
+    todos: [],
     loading: true,
   });
   useEffect(() => {
@@ -42,6 +36,15 @@ const TodoApp = () => {
         ...state,
         todos: [...state.todos, { completed: false, content: newItem }],
       }));
+      fetch("http://localhost:4500/todos/add", {
+        method: "POST",
+        body: JSON.stringify({ completed: false, content: newItem }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((res) => res.json())
+        .catch((err) => console.log(err));
       setNewItem("");
     } else {
       alert("Entrer une tache valide");
@@ -53,7 +56,13 @@ const TodoApp = () => {
   });
   const deleteItem = (todo) => {
     const newstate = state.todos.filter((item) => item !== todo);
+    console.log(todo);
     setstate((state) => ({ ...state, todos: newstate }));
+    fetch("http://localhost:4500/todos/delete/" + todo._id, {
+      method: "DELETE",
+    })
+      .then((res) => res.json())
+      .catch((err) => console.log(err));
   };
   const handleChange = (event) => {
     setNewItem(event.target.value);
@@ -69,8 +78,8 @@ const TodoApp = () => {
               .map((item, index) => (
                 <TodoItem
                   todo={item}
-                  key={index}
-                  index={`${index}-${new Date().getMilliseconds()}`}
+                  key={item._id}
+                  index={`${item._id}-${Date.now()}`}
                   isActive={item.completed}
                   onClick={() => completeTodo(item)}
                   Ondelete={() => deleteItem(item)}
@@ -133,8 +142,8 @@ const TodoApp = () => {
               .map((item, index) => (
                 <TodoItem
                   todo={item}
-                  key={index}
-                  index={`${index} + ${item.title}`}
+                  key={item._id}
+                  index={`${item._id} + ${item.title}`}
                   onClick={() => completeTodo(item)}
                   Ondelete={() => deleteItem(item)}
                   isActive={item.completed}
