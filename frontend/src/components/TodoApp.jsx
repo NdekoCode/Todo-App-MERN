@@ -42,6 +42,15 @@ const TodoApp = () => {
         ...state,
         todos: [...state.todos, { completed: false, content: newItem }],
       }));
+      fetch("http://localhost:4500/todos/add", {
+        method: "POST",
+        body: JSON.stringify({ completed: false, content: newItem }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((res) => res.json())
+        .catch((err) => console.log(err));
       setNewItem("");
     } else {
       alert("Entrer une tache valide");
