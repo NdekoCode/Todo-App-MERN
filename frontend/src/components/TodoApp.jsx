@@ -26,16 +26,22 @@ const TodoApp = () => {
       if (item === todo) {
         item.completed = !todo.completed;
       }
+      fetch("http://localhost:4500/todos/update/" + todo._id, {
+        method: "PUT",
+        body: JSON.stringify(todo),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((res) => res.json())
+        .catch((err) => console.log(err));
+      setNewItem("");
       return item;
     });
     setstate((state) => ({ ...state, todos }));
   });
   const addItem = () => {
     if (newItem.length > 2) {
-      setstate((state) => ({
-        ...state,
-        todos: [...state.todos, { completed: false, content: newItem }],
-      }));
       fetch("http://localhost:4500/todos/add", {
         method: "POST",
         body: JSON.stringify({ completed: false, content: newItem }),
@@ -43,7 +49,14 @@ const TodoApp = () => {
           "Content-Type": "application/json",
         },
       })
-        .then((res) => res.json())
+        .then((res) => {
+          setstate((state) => ({
+            ...state,
+            todos: [...state.todos, { completed: false, content: newItem }],
+          }));
+          return res.json();
+        })
+        .then((data) => console.log(data))
         .catch((err) => console.log(err));
       setNewItem("");
     } else {
@@ -78,7 +91,7 @@ const TodoApp = () => {
               .map((item, index) => (
                 <TodoItem
                   todo={item}
-                  key={item._id}
+                  key={index}
                   index={`${item._id}-${Date.now()}`}
                   isActive={item.completed}
                   onClick={() => completeTodo(item)}
@@ -142,7 +155,7 @@ const TodoApp = () => {
               .map((item, index) => (
                 <TodoItem
                   todo={item}
-                  key={item._id}
+                  key={index}
                   index={`${item._id} + ${item.title}`}
                   onClick={() => completeTodo(item)}
                   Ondelete={() => deleteItem(item)}
