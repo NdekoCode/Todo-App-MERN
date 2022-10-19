@@ -28,7 +28,7 @@ const TodoItem = ({ todo, index, onClick, Ondelete, isActive }) => {
             />
           </svg>
         </span>
-        <span className="ml-4 text-sm">{todo.title}</span>
+        <span className="ml-4 text-sm">{todo.content}</span>
       </label>
       <button onClick={Ondelete}>
         <svg
