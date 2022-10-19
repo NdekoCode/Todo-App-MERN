@@ -85,6 +85,26 @@ export default class TodoController {
       },
     });
   }
+  deleteTodo(req, res) {
+    if (req.params.id) {
+      return TodoModel.findOneAndDelete(req.params.id).then(() =>
+        res.status(201).send({
+          alert: {
+            messages: "Tache supprimés avec succés",
+            type: "success",
+            statusCode: 201,
+          },
+        })
+      );
+    }
+    return res.status(500).send({
+      alert: {
+        messages: "Echec lors de la suppression",
+        type: "danger",
+        statusCode: 500,
+      },
+    });
+  }
   getTodos(req, res) {
     TodoModel.find((err, items) => {
       if (err) return err;

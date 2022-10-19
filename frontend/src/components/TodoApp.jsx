@@ -56,7 +56,13 @@ const TodoApp = () => {
   });
   const deleteItem = (todo) => {
     const newstate = state.todos.filter((item) => item !== todo);
+    console.log(todo);
     setstate((state) => ({ ...state, todos: newstate }));
+    fetch("http://localhost:4500/todos/delete/" + todo._id, {
+      method: "DELETE",
+    })
+      .then((res) => res.json())
+      .catch((err) => console.log(err));
   };
   const handleChange = (event) => {
     setNewItem(event.target.value);
