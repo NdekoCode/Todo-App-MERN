@@ -50,6 +50,41 @@ export default class TodoController {
       },
     });
   }
+  updateTodo(req, res) {
+    if (req.body && req.params.id) {
+      const todoUpdate = {
+        content: req.body.content,
+        completed: req.body.completed,
+        updated_at: Date.now(),
+      };
+      return TodoModel.findByIdAndUpdate(req.params.id, todoUpdate)
+        .then(() =>
+          res.status(201).send({
+            alert: {
+              message: "Tache modifier avec succés",
+              type: "success",
+              statusCode: 201,
+            },
+          })
+        )
+        .catch(() =>
+          res.status(500).send({
+            alert: {
+              message: "Erreur lors de la modification de la tache",
+              type: "danger",
+              statusCode: 500,
+            },
+          })
+        );
+    }
+    return res.status(500).send({
+      alert: {
+        message: "Erreur lors de la modification de la tache",
+        type: "danger",
+        statusCode: 500,
+      },
+    });
+  }
   getTodos(req, res) {
     TodoModel.find((err, items) => {
       if (err) return err;

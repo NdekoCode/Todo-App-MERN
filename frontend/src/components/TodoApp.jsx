@@ -5,13 +5,7 @@ import TodoItem from "./TodoItem";
 
 const TodoApp = () => {
   const [state, setstate] = useState({
-    todos: [
-      { completed: true, title: "Item #1" },
-      { completed: true, title: "Item #2" },
-      { completed: false, title: "Item #3" },
-      { completed: false, title: "Item #4" },
-      { completed: true, title: "Item #5" },
-    ],
+    todos: [],
     loading: true,
   });
   useEffect(() => {
@@ -78,8 +72,8 @@ const TodoApp = () => {
               .map((item, index) => (
                 <TodoItem
                   todo={item}
-                  key={index}
-                  index={`${index}-${new Date().getMilliseconds()}`}
+                  key={item._id}
+                  index={`${item._id}-${Date.now()}`}
                   isActive={item.completed}
                   onClick={() => completeTodo(item)}
                   Ondelete={() => deleteItem(item)}
@@ -142,8 +136,8 @@ const TodoApp = () => {
               .map((item, index) => (
                 <TodoItem
                   todo={item}
-                  key={index}
-                  index={`${index} + ${item.title}`}
+                  key={item._id}
+                  index={`${item._id} + ${item.title}`}
                   onClick={() => completeTodo(item)}
                   Ondelete={() => deleteItem(item)}
                   isActive={item.completed}
