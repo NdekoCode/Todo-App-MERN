@@ -1,29 +1,47 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useCallback } from "react";
 import { useState } from "react";
 import TodoItem from "./TodoItem";
 
 const TodoApp = () => {
-  const [items, setItems] = useState([
-    { completed: true, title: "Item #1" },
-    { completed: true, title: "Item #2" },
-    { completed: false, title: "Item #3" },
-    { completed: false, title: "Item #4" },
-    { completed: true, title: "Item #5" },
-  ]);
+  const [state, setstate] = useState({
+    todos: [
+      { completed: true, title: "Item #1" },
+      { completed: true, title: "Item #2" },
+      { completed: false, title: "Item #3" },
+      { completed: false, title: "Item #4" },
+      { completed: true, title: "Item #5" },
+    ],
+    loading: true,
+  });
+  useEffect(() => {
+    (async () => {
+      if (state.loading) {
+        const response = await fetch("http://localhost:4500/todos");
+        const responseData = await response.json();
+        setstate({
+          todos: responseData?.todos,
+          loading: false,
+        });
+      }
+    })();
+  }, [state.loading]);
   const [newItem, setNewItem] = useState("");
   const completeTodo = useCallback((todo) => {
-    const todos = items.map((item) => {
+    const todos = state.todos.map((item) => {
       if (item === todo) {
         item.completed = !todo.completed;
       }
       return item;
     });
-    setItems(todos);
+    setstate((state) => ({ ...state, todos }));
   });
   const addItem = () => {
     if (newItem.length > 2) {
-      setItems((item) => [...item, { completed: false, title: newItem }]);
+      setstate((state) => ({
+        ...state,
+        todos: [...state.todos, { completed: false, content: newItem }],
+      }));
       setNewItem("");
     } else {
       alert("Entrer une tache valide");
@@ -34,8 +52,8 @@ const TodoApp = () => {
     addItem();
   });
   const deleteItem = (todo) => {
-    const newItems = items.filter((item) => item !== todo);
-    setItems(newItems);
+    const newstate = state.todos.filter((item) => item !== todo);
+    setstate((state) => ({ ...state, todos: newstate }));
   };
   const handleChange = (event) => {
     setNewItem(event.target.value);
@@ -46,7 +64,7 @@ const TodoApp = () => {
         <h2 className="title title-2">List Undone</h2>
         <div className="max-w-full p-8 bg-white rounded-lg shadow-lg w-96 card">
           <ul className="max-w-full p-5 bg-white rounded-lg todo-item w-96">
-            {items
+            {state.todos
               .filter((item) => !item.completed)
               .map((item, index) => (
                 <TodoItem
@@ -62,12 +80,12 @@ const TodoApp = () => {
               ))}
           </ul>
           <p className="my-2">
-            {items.filter((item) => !item.completed).length} items restant
+            {state.todos.filter((item) => !item.completed).length} state restant
           </p>
           <form
             onSubmit={submitItem}
             method="POST"
-            className="flex items-center w-full h-8 px-2 mt-2 text-sm font-medium rounded"
+            className="flex state-center w-full h-8 px-2 mt-2 text-sm font-medium rounded"
           >
             <button onClick={submitItem}>
               <svg
@@ -110,7 +128,7 @@ const TodoApp = () => {
         <h2 className="title title-2">List Done</h2>
         <div className="max-w-full p-8 bg-white rounded-lg shadow-lg w-96 card">
           <ul className="max-w-full p-5 bg-white rounded-lg todo-item w-96">
-            {items
+            {state.todos
               .filter((item) => item.completed)
               .map((item, index) => (
                 <TodoItem
@@ -127,7 +145,8 @@ const TodoApp = () => {
               ))}
           </ul>
           <p className="my-2">
-            {items.filter((item) => item.completed).length} taches terminées
+            {state.todos.filter((item) => item.completed).length} taches
+            terminées
           </p>
         </div>
       </div>
