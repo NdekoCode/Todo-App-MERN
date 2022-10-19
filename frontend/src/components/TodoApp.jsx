@@ -26,6 +26,15 @@ const TodoApp = () => {
       if (item === todo) {
         item.completed = !todo.completed;
       }
+      fetch("http://localhost:4500/todos/update/" + todo._id, {
+        method: "PUT",
+        body: JSON.stringify(todo),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((res) => res.json())
+        .catch((err) => console.log(err));
       return item;
     });
     setstate((state) => ({ ...state, todos }));
