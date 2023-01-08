@@ -5,7 +5,7 @@ const TodoItem = ({ todo, index, onClick, Ondelete, isActive }) => {
     <li className="flex items-center justify-between w-full">
       <input
         onInput={onClick}
-        className={`hidden ${isActive && "is-active"}`}
+        className={`hidden ${isActive ? "is-active" : ""}`}
         type="checkbox"
         id={index}
         defaultChecked=""
