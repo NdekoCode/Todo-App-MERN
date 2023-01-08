@@ -63,4 +63,14 @@ export default class TodoController {
 
     return todos ? res.send({ todos }) : res.send({ todos: [] });
   }
+  async getTodo(req, res) {
+    const id = req.params.id;
+    const alert = new Alert(req, res);
+    try {
+      const todo = await TodoModel.findById(id);
+      return todo ? res.json(todo) : alert.danger("Tache introuvable", 404);
+    } catch (error) {
+      return alert.danger(error.message, 500);
+    }
+  }
 }
