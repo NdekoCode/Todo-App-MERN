@@ -1,6 +1,7 @@
 import React, {
   createContext,
   memo,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -34,6 +35,20 @@ export const TodoContextProvider = memo(({ children }) => {
     setTodos(newTodos);
   });
 
+  const addItem = useCallback(() => {
+    if (newItem.length > 2) {
+      (async () => {
+        await postItem("http://localhost:4500/api/v1/todos/add", {
+          body: JSON.stringify({ completed: false, content: newItem }),
+        });
+        setTodos([...state.todos, { completed: false, content: newItem }]);
+        setNewItem("");
+      })();
+    } else {
+      alert("Entrer une tache valide");
+    }
+  }, []);
+
   useEffect(() => {
     setTodos(items?.todos ? items?.todos : []);
   }, [loading]);
@@ -45,6 +60,7 @@ export const TodoContextProvider = memo(({ children }) => {
       newItem,
       setNewItem,
       completeTodo,
+      addItem,
     }),
     [todos]
   );

@@ -5,26 +5,6 @@ import TodoItem from "./TodoItem";
 const TodoApp = () => {
   const { todos, loading, setTodos, newItem, setNewItem, completeTodo } =
     UseTodoContext();
-  const addItem = () => {
-    if (newItem.length > 2) {
-      fetch("http://localhost:4500/api/v1/todos/add", {
-        method: "POST",
-        body: JSON.stringify({ completed: false, content: newItem }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-        .then((res) => {
-          setTodos([...state.todos, { completed: false, content: newItem }]);
-          return res.json();
-        })
-        .then((data) => console.log(data))
-        .catch((err) => console.log(err));
-      setNewItem("");
-    } else {
-      alert("Entrer une tache valide");
-    }
-  };
   const submitItem = useCallback((event) => {
     event.preventDefault();
     addItem();
