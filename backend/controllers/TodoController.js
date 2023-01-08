@@ -3,6 +3,7 @@ import Alert from "../utils/Alert.js";
 export default class TodoController {
   async addTodo(req, res) {
     const alert = new Alert(req, res);
+    console.log(req.body);
     if (req.body) {
       const newTodos = {
         content: req.body.content,
@@ -10,7 +11,8 @@ export default class TodoController {
       };
       try {
         const todo = new TodoModel(newTodos);
-        const data = await TodoModel.findOne({ content: req.body });
+        console.log(todo);
+        const data = await TodoModel.findOne({ content: req.body.content });
         if (!data) {
           await todo.save();
           return alert.success("Todos Ajouter avec succés", 201);
@@ -18,6 +20,7 @@ export default class TodoController {
 
         return alert.danger("La tache existe déjà", 409);
       } catch (error) {
+        console.log(error);
         return alert.danger(
           "Erreur lors de l'enregistrement des données " + error.message,
           500
@@ -56,8 +59,8 @@ export default class TodoController {
     return alert.danger("Echec lors de la suppression", 500);
   }
   async getTodos(req, res) {
-    const todos = await TodoModel.find({}).order({ createdAt: -1 }).exec();
+    const todos = await TodoModel.find({}).sort({ createdAt: -1 }).exec();
 
-    return todos ? res.send({ todos: items }) : res.send({ todos: [] });
+    return todos ? res.send({ todos }) : res.send({ todos: [] });
   }
 }
