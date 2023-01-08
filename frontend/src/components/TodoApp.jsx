@@ -1,24 +1,23 @@
 import React, { useCallback } from "react";
 import UseTodoContext from "../libs/context/TodoContext";
+import CountStateTodo from "./CountStateTodo";
 import TodoItem from "./TodoItem";
 
 const TodoApp = () => {
-  const { todos, loading, setTodos, newItem, setNewItem, completeTodo } =
-    UseTodoContext();
+  const {
+    todos,
+    loading,
+    setTodos,
+    newItem,
+    setNewItem,
+    completeTodo,
+    addItem,
+    deleteItem,
+  } = UseTodoContext();
   const submitItem = useCallback((event) => {
     event.preventDefault();
     addItem();
   });
-  const deleteItem = (todo) => {
-    const newstate = state.todos.filter((item) => item !== todo);
-    console.log(todo);
-    setTodos(newstate);
-    fetch("http://localhost:4500/api/v1/todos/delete/" + todo._id, {
-      method: "DELETE",
-    })
-      .then((res) => res.json())
-      .catch((err) => console.log(err));
-  };
   const handleChange = (event) => {
     setNewItem(event.target.value);
   };
@@ -45,9 +44,10 @@ const TodoApp = () => {
                     </TodoItem>
                   ))}
           </ul>
-          <p className="my-2">
-            {todos.filter((item) => !item.completed).length} state restant
-          </p>
+          <CountStateTodo
+            count={todos.filter((item) => !item.completed).length}
+            text={"state restant"}
+          />
           <form
             onSubmit={submitItem}
             method="POST"

@@ -49,6 +49,15 @@ export const TodoContextProvider = memo(({ children }) => {
     }
   }, []);
 
+  const deleteItem = (todo) => {
+    const newstate = state.todos.filter((item) => item !== todo);
+    setTodos(newstate);
+    (async () => {
+      await postItem("http://localhost:4500/api/v1/todos/delete/" + todo._id, {
+        method: "DELETE",
+      });
+    })();
+  };
   useEffect(() => {
     setTodos(items?.todos ? items?.todos : []);
   }, [loading]);
@@ -61,6 +70,7 @@ export const TodoContextProvider = memo(({ children }) => {
       setNewItem,
       completeTodo,
       addItem,
+      deleteItem,
     }),
     [todos]
   );
