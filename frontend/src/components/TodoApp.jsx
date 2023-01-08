@@ -1,25 +1,10 @@
-import React, { useEffect } from "react";
-import { useCallback } from "react";
-import { useState } from "react";
+import React, { useCallback, useState } from "react";
+import { useFetch } from "../libs/hooks/useFetch";
 import TodoItem from "./TodoItem";
 
 const TodoApp = () => {
-  const [state, setstate] = useState({
-    todos: [],
-    loading: true,
-  });
-  useEffect(() => {
-    (async () => {
-      if (state.loading) {
-        const response = await fetch("http://localhost:4500/todos");
-        const responseData = await response.json();
-        setstate({
-          todos: responseData?.todos,
-          loading: false,
-        });
-      }
-    })();
-  }, [state.loading]);
+  const [items, loading] = useFetch("http://localhost:4500/todos");
+  const [todos, setTodos] = useState(items);
   const [newItem, setNewItem] = useState("");
   const completeTodo = useCallback((todo) => {
     const todos = state.todos.map((item) => {
@@ -38,7 +23,7 @@ const TodoApp = () => {
       setNewItem("");
       return item;
     });
-    setstate((state) => ({ ...state, todos }));
+    setTodos(todos);
   });
   const addItem = () => {
     if (newItem.length > 2) {
@@ -50,10 +35,7 @@ const TodoApp = () => {
         },
       })
         .then((res) => {
-          setstate((state) => ({
-            ...state,
-            todos: [...state.todos, { completed: false, content: newItem }],
-          }));
+          setTodos([...state.todos, { completed: false, content: newItem }]);
           return res.json();
         })
         .then((data) => console.log(data))
@@ -70,7 +52,7 @@ const TodoApp = () => {
   const deleteItem = (todo) => {
     const newstate = state.todos.filter((item) => item !== todo);
     console.log(todo);
-    setstate((state) => ({ ...state, todos: newstate }));
+    setTodos(newstate);
     fetch("http://localhost:4500/todos/delete/" + todo._id, {
       method: "DELETE",
     })
@@ -86,7 +68,7 @@ const TodoApp = () => {
         <h2 className="title title-2">List Undone</h2>
         <div className="max-w-full p-8 bg-white rounded-lg shadow-lg w-96 card">
           <ul className="max-w-full p-5 bg-white rounded-lg todo-item w-96">
-            {state.todos
+            {todos
               .filter((item) => !item.completed)
               .map((item, index) => (
                 <TodoItem
@@ -102,12 +84,12 @@ const TodoApp = () => {
               ))}
           </ul>
           <p className="my-2">
-            {state.todos.filter((item) => !item.completed).length} state restant
+            {todos.filter((item) => !item.completed).length} state restant
           </p>
           <form
             onSubmit={submitItem}
             method="POST"
-            className="flex state-center w-full h-8 px-2 mt-2 text-sm font-medium rounded"
+            className="flex w-full h-8 px-2 mt-2 text-sm font-medium rounded state-center"
           >
             <button onClick={submitItem}>
               <svg
@@ -150,7 +132,7 @@ const TodoApp = () => {
         <h2 className="title title-2">List Done</h2>
         <div className="max-w-full p-8 bg-white rounded-lg shadow-lg w-96 card">
           <ul className="max-w-full p-5 bg-white rounded-lg todo-item w-96">
-            {state.todos
+            {todos
               .filter((item) => item.completed)
               .map((item, index) => (
                 <TodoItem
@@ -167,8 +149,7 @@ const TodoApp = () => {
               ))}
           </ul>
           <p className="my-2">
-            {state.todos.filter((item) => item.completed).length} taches
-            terminées
+            {todos.filter((item) => item.completed).length} taches terminées
           </p>
         </div>
       </div>
