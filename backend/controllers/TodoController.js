@@ -55,10 +55,9 @@ export default class TodoController {
     }
     return alert.danger("Echec lors de la suppression", 500);
   }
-  getTodos(req, res) {
-    TodoModel.find((err, items) => {
-      if (err) return err;
-      return res.send({ todos: items });
-    });
+  async getTodos(req, res) {
+    const todos = await TodoModel.find({}).order({ createdAt: -1 }).exec();
+
+    return todos ? res.send({ todos: items }) : res.send({ todos: [] });
   }
 }
