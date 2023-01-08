@@ -1,17 +1,16 @@
 import React, { useCallback, useState } from "react";
-import { useFetch } from "../libs/hooks/useFetch";
+import UseTodoContext from "../libs/context/TodoContext";
 import TodoItem from "./TodoItem";
 
 const TodoApp = () => {
-  const [items, loading] = useFetch("http://localhost:4500/todos");
-  const [todos, setTodos] = useState(items);
+  const { todos, loading, setTodos } = UseTodoContext();
   const [newItem, setNewItem] = useState("");
   const completeTodo = useCallback((todo) => {
     const todos = state.todos.map((item) => {
       if (item === todo) {
         item.completed = !todo.completed;
       }
-      fetch("http://localhost:4500/todos/update/" + todo._id, {
+      fetch("http://localhost:4500/api/v1/todos/update/" + todo._id, {
         method: "PUT",
         body: JSON.stringify(todo),
         headers: {
@@ -27,7 +26,7 @@ const TodoApp = () => {
   });
   const addItem = () => {
     if (newItem.length > 2) {
-      fetch("http://localhost:4500/todos/add", {
+      fetch("http://localhost:4500/api/v1/todos/add", {
         method: "POST",
         body: JSON.stringify({ completed: false, content: newItem }),
         headers: {
@@ -53,7 +52,7 @@ const TodoApp = () => {
     const newstate = state.todos.filter((item) => item !== todo);
     console.log(todo);
     setTodos(newstate);
-    fetch("http://localhost:4500/todos/delete/" + todo._id, {
+    fetch("http://localhost:4500/api/v1/todos/delete/" + todo._id, {
       method: "DELETE",
     })
       .then((res) => res.json())
