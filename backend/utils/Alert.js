@@ -23,4 +23,16 @@ export default class Alert {
     }
     return this.makeAlert(message, statusCode);
   }
+
+  success(message, statusCode = 200, type = "success") {
+    return this.makeAlert(statusCode, message, type);
+  }
+
+  warning(message, statusCode = 200, type = "warning") {
+    return this.makeAlert(statusCode, message, type);
+  }
+
+  info(message, statusCode = 100, type = "info") {
+    return this.makeAlert(statusCode, message, type);
+  }
 }
