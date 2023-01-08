@@ -1,6 +1,14 @@
-import React from "react";
+import React, { useCallback } from "react";
 
 const AddTodo = () => {
+  const { newItem, setNewItem, addItem } = UseTodoContext();
+  const submitItem = useCallback((event) => {
+    event.preventDefault();
+    addItem();
+  });
+  const handleChange = (event) => {
+    setNewItem(event.target.value);
+  };
   return (
     <form
       onSubmit={submitItem}
