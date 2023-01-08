@@ -8,41 +8,39 @@ import React, {
   useState,
 } from "react";
 import { useFetch } from "../hooks/useFetch";
-import { postItem } from "../services/todos";
+import { getItems, postItem } from "../services/todos";
 export const TodoContext = createContext();
 export const TodoContextProvider = memo(({ children }) => {
   const [items, loading] = useFetch("http://localhost:4500/api/v1/todos");
   const [todos, setTodos] = useState([]);
-  const [newItem, setNewItem] = useState("");
 
-  const completeTodo = useCallback(async (todo) => {
+  const completeTodo = useCallback((todo) => {
     const newTodos = todos.map((item) => {
-      if (item === todo) {
+      if (item._id === todo._id) {
         item.completed = !todo.completed;
+        (async () => {
+          await postItem(
+            "http://localhost:4500/api/v1/todos/update/" + todo._id,
+            {
+              method: "PUT",
+              body: JSON.stringify(item),
+            }
+          );
+        })();
       }
-      (async () => {
-        await postItem(
-          "http://localhost:4500/api/v1/todos/update/" + todo._id,
-          {
-            method: "PUT",
-            body: JSON.stringify(item),
-          }
-        );
-      })();
-      setNewItem("");
       return item;
     });
     setTodos(newTodos);
   });
 
-  const addItem = useCallback(() => {
+  const addItem = useCallback((newItem) => {
     if (newItem.length > 2) {
       (async () => {
         await postItem("http://localhost:4500/api/v1/todos/add", {
           body: JSON.stringify({ completed: false, content: newItem }),
         });
-        setTodos([...state.todos, { completed: false, content: newItem }]);
-        setNewItem("");
+        const { todos } = await getItems("http://localhost:4500/api/v1/todos");
+        setTodos(todos);
       })();
     } else {
       alert("Entrer une tache valide");
@@ -50,12 +48,12 @@ export const TodoContextProvider = memo(({ children }) => {
   }, []);
 
   const deleteItem = (todo) => {
-    const newstate = state.todos.filter((item) => item !== todo);
-    setTodos(newstate);
     (async () => {
       await postItem("http://localhost:4500/api/v1/todos/delete/" + todo._id, {
         method: "DELETE",
       });
+      const newstate = todos.filter(({ _id }) => _id !== todo._id);
+      setTodos(newstate);
     })();
   };
   useEffect(() => {
@@ -66,8 +64,6 @@ export const TodoContextProvider = memo(({ children }) => {
       todos,
       loading,
       setTodos,
-      newItem,
-      setNewItem,
       completeTodo,
       addItem,
       deleteItem,

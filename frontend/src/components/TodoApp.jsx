@@ -6,11 +6,18 @@ const TodoApp = () => {
   const { todos, loading } = UseTodoContext();
   return (
     <div className="row">
-      <Todos todos={todos} loading={loading} add={true}>
+      <Todos
+        todos={todos.filter((item) => !item.completed)}
+        loading={loading}
+        add={true}
+      >
         <h2 className="title title-2">List Undone</h2>
       </Todos>
 
-      <Todos todos={todos} label={"taches terminées"}>
+      <Todos
+        todos={todos.filter((item) => item.completed)}
+        label={"taches terminées"}
+      >
         <h2 className="title title-2">List Done</h2>
       </Todos>
     </div>

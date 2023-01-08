@@ -14,3 +14,13 @@ export const postItem = async (url, params) => {
     console.log(error);
   }
 };
+
+export const getItems = async (url) => {
+  try {
+    const response = await fetch(url);
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.log(error);
+  }
+};

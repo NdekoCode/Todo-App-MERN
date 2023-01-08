@@ -1,11 +1,14 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import UseTodoContext from "../libs/context/TodoContext";
 
 const AddTodo = () => {
-  const { newItem, setNewItem, addItem } = UseTodoContext();
+  const [newItem, setNewItem] = useState("");
+  const { addItem } = UseTodoContext();
   const submitItem = useCallback((event) => {
     event.preventDefault();
-    addItem();
+    const adding = newItem;
+    addItem(adding);
+    setNewItem("");
   });
   const handleChange = (event) => {
     setNewItem(event.target.value);

@@ -6,7 +6,7 @@ import ListTodos from "./ListTodos";
 const Todos = ({
   loading = false,
   todos,
-  add = true,
+  add = false,
   label = "Tache restant",
   children = "",
 }) => {
@@ -15,10 +15,7 @@ const Todos = ({
       {children}
       <div className="max-w-full p-8 bg-white rounded-lg shadow-lg w-96 card">
         {loading ? "Loading..." : <ListTodos todos={todos} />}
-        <CountStateTodo
-          count={todos.filter((item) => !item.completed).length}
-          text={label}
-        />
+        <CountStateTodo count={todos.length} text={label} />
         {add && <AddTodo />}
       </div>
     </div>
