@@ -1,114 +1,63 @@
 import { TodoModel } from "../models/Todos.js";
+import Alert from "../utils/Alert.js";
 export default class TodoController {
-  addTodo(req, res) {
+  async addTodo(req, res) {
+    const alert = new Alert(req, res);
     if (req.body) {
       const newTodos = {
         content: req.body.content,
         completed: false,
       };
+      try {
+        const todo = new TodoModel(newTodos);
+        const data = await TodoModel.findOne({ content: req.body });
+        if (!data) {
+          await todo.save();
+          return alert.success("Todos Ajouter avec succés", 201);
+        }
 
-      const todo = new TodoModel(newTodos);
-      return TodoModel.exists({ content: req.body.content })
-        .then((data) => {
-          if (!data) {
-            return todo
-              .save()
-              .then(() => {
-                return res.status(200).send({
-                  alert: {
-                    message: "Todos Ajouter avec succés",
-                    type: "success",
-                    statusCode: 201,
-                  },
-                });
-              })
-              .catch(() =>
-                res.status(500).send({
-                  alert: {
-                    message: "Erreur lors de l'enregistrement des données",
-                    type: "danger",
-                    statusCode: 500,
-                  },
-                })
-              );
-          }
-          return res.status(409).send({
-            alert: {
-              message: "La tache existe déjà",
-              type: "danger",
-              statusCode: 409,
-            },
-          });
-        })
-        .catch(() => {});
+        return alert.danger("La tache existe déjà", 409);
+      } catch (error) {
+        return alert.danger(
+          "Erreur lors de l'enregistrement des données " + error.message,
+          500
+        );
+      }
     }
-    return res.status(400).send({
-      alert: {
-        message: "Erreur lors de l'enregistrement des données",
-        type: "danger",
-        statusCode: 400,
-      },
-    });
+
+    return alert.danger("Erreur lors de l'enregistrement des données", 400);
   }
   updateTodo(req, res) {
+    const alert = new Alert(req, res);
     if (req.body && req.params.id) {
       const todoUpdate = {
         content: req.body.content,
         completed: req.body.completed,
-        updated_at: Date.now(),
+        updatedAt: Date.now(),
       };
       return TodoModel.findByIdAndUpdate(req.params.id, todoUpdate)
-        .then(() =>
-          res.status(201).send({
-            alert: {
-              message: "Tache modifier avec succés",
-              type: "success",
-              statusCode: 201,
-            },
-          })
-        )
-        .catch(() =>
-          res.status(500).send({
-            alert: {
-              message: "Erreur lors de la modification de la tache",
-              type: "danger",
-              statusCode: 500,
-            },
-          })
+        .then(() => alert.success("Tache modifier avec succés", 201))
+        .catch((error) =>
+          alert.danger(
+            "Erreur lors de la modification de la tache " + error.message,
+            500
+          )
         );
     }
-    return res.status(500).send({
-      alert: {
-        message: "Erreur lors de la modification de la tache",
-        type: "danger",
-        statusCode: 500,
-      },
-    });
+    return alert.danger("Erreur lors de la modification de la tache", 500);
   }
   deleteTodo(req, res) {
+    const alert = new Alert(req, res);
     if (req.params.id) {
       return TodoModel.findOneAndDelete(req.params.id).then(() =>
-        res.status(201).send({
-          alert: {
-            messages: "Tache supprimés avec succés",
-            type: "success",
-            statusCode: 201,
-          },
-        })
+        alert.success("Tache supprimés avec succés", 201)
       );
     }
-    return res.status(500).send({
-      alert: {
-        messages: "Echec lors de la suppression",
-        type: "danger",
-        statusCode: 500,
-      },
-    });
+    return alert.danger("Echec lors de la suppression", 500);
   }
-  getTodos(req, res) {
-    TodoModel.find((err, items) => {
-      if (err) return err;
-      return res.send({ todos: items });
-    });
+  async getTodos(req, res) {
+    const todos = await TodoModel.find({}).order({ createdAt: -1 }).exec();
+
+    return todos ? res.send({ todos: items }) : res.send({ todos: [] });
   }
 }
