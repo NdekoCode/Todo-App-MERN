@@ -1,6 +1,8 @@
 import { TodoModel } from "../models/Todos.js";
+import Alert from "../utils/Alert.js";
 export default class TodoController {
   async addTodo(req, res) {
+    const alert = new Alert(req, res);
     if (req.body) {
       const newTodos = {
         content: req.body.content,
@@ -11,41 +13,19 @@ export default class TodoController {
         const data = await TodoModel.findOne({ content: req.body });
         if (!data) {
           await todo.save();
-          return res.status(200).send({
-            alert: {
-              message: "Todos Ajouter avec succés",
-              type: "success",
-              statusCode: 201,
-            },
-          });
+          return alert.success("Todos Ajouter avec succés", 201);
         }
 
-        return res.status(409).send({
-          alert: {
-            message: "La tache existe déjà",
-            type: "danger",
-            statusCode: 409,
-          },
-        });
+        return alert.danger("La tache existe déjà", 409);
       } catch (error) {
-        res.status(500).send({
-          alert: {
-            message:
-              "Erreur lors de l'enregistrement des données " + error.message,
-            type: "danger",
-            statusCode: 500,
-          },
-        });
+        return alert.danger(
+          "Erreur lors de l'enregistrement des données " + error.message,
+          500
+        );
       }
     }
 
-    return res.status(400).send({
-      alert: {
-        message: "Erreur lors de l'enregistrement des données",
-        type: "danger",
-        statusCode: 400,
-      },
-    });
+    return alert.danger("Erreur lors de l'enregistrement des données", 400);
   }
   updateTodo(req, res) {
     if (req.body && req.params.id) {
