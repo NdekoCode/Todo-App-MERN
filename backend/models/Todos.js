@@ -17,7 +17,8 @@ const TodoSchema = new Schema({
     type: Date,
   },
 });
+
 /**
- *
+ * @type {collection}
  */
 export const TodoModel = model("todos", TodoSchema);

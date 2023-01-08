@@ -1,12 +1,11 @@
 import { connect } from "mongoose";
-export default function databaseConnect() {
+export default async function databaseConnect() {
   const dbUrl = process.env.MONGO_URL;
-
-  return connect(dbUrl, { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => {
-      console.log("Connexion à MongoDB reussie");
-    })
-    .catch(() => {
-      console.log("Connexion à MongoDB à échouer");
-    });
+  try {
+    const connexionParams = { useNewUrlParser: true, useUnifiedTopology: true };
+    await connect(dbUrl, connexionParams);
+    console.log("Connexion à MongoDB reussie");
+  } catch (error) {
+    console.log("Connexion à MongoDB à échouer", error.message);
+  }
 }
