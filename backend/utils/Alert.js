@@ -17,4 +17,10 @@ export default class Alert {
       ...this.othersData,
     });
   }
+  danger(message, statusCode = 400) {
+    if (statusCode === 500 && process.env.NODE_ENV !== "development") {
+      message = "Impossible d'afficher les information pour le moment";
+    }
+    return this.makeAlert(message, statusCode);
+  }
 }
