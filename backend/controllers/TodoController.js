@@ -28,39 +28,23 @@ export default class TodoController {
     return alert.danger("Erreur lors de l'enregistrement des données", 400);
   }
   updateTodo(req, res) {
+    const alert = new Alert(req, res);
     if (req.body && req.params.id) {
       const todoUpdate = {
         content: req.body.content,
         completed: req.body.completed,
-        updated_at: Date.now(),
+        updatedAt: Date.now(),
       };
       return TodoModel.findByIdAndUpdate(req.params.id, todoUpdate)
-        .then(() =>
-          res.status(201).send({
-            alert: {
-              message: "Tache modifier avec succés",
-              type: "success",
-              statusCode: 201,
-            },
-          })
-        )
-        .catch(() =>
-          res.status(500).send({
-            alert: {
-              message: "Erreur lors de la modification de la tache",
-              type: "danger",
-              statusCode: 500,
-            },
-          })
+        .then(() => alert.success("Tache modifier avec succés", 201))
+        .catch((error) =>
+          alert.danger(
+            "Erreur lors de la modification de la tache " + error.message,
+            500
+          )
         );
     }
-    return res.status(500).send({
-      alert: {
-        message: "Erreur lors de la modification de la tache",
-        type: "danger",
-        statusCode: 500,
-      },
-    });
+    return alert.danger("Erreur lors de la modification de la tache", 500);
   }
   deleteTodo(req, res) {
     if (req.params.id) {
