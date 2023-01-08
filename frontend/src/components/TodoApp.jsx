@@ -5,25 +5,6 @@ import TodoItem from "./TodoItem";
 const TodoApp = () => {
   const { todos, loading, setTodos } = UseTodoContext();
   const [newItem, setNewItem] = useState("");
-  const completeTodo = useCallback((todo) => {
-    const todos = state.todos.map((item) => {
-      if (item === todo) {
-        item.completed = !todo.completed;
-      }
-      fetch("http://localhost:4500/api/v1/todos/update/" + todo._id, {
-        method: "PUT",
-        body: JSON.stringify(todo),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-        .then((res) => res.json())
-        .catch((err) => console.log(err));
-      setNewItem("");
-      return item;
-    });
-    setTodos(todos);
-  });
   const addItem = () => {
     if (newItem.length > 2) {
       fetch("http://localhost:4500/api/v1/todos/add", {
@@ -67,20 +48,22 @@ const TodoApp = () => {
         <h2 className="title title-2">List Undone</h2>
         <div className="max-w-full p-8 bg-white rounded-lg shadow-lg w-96 card">
           <ul className="max-w-full p-5 bg-white rounded-lg todo-item w-96">
-            {todos
-              .filter((item) => !item.completed)
-              .map((item, index) => (
-                <TodoItem
-                  todo={item}
-                  key={index}
-                  index={`${item._id}-${Date.now()}`}
-                  isActive={item.completed}
-                  onClick={() => completeTodo(item)}
-                  Ondelete={() => deleteItem(item)}
-                >
-                  {item.title}
-                </TodoItem>
-              ))}
+            {loading
+              ? "Loading..."
+              : todos
+                  .filter((item) => !item.completed)
+                  .map((item, index) => (
+                    <TodoItem
+                      todo={item}
+                      key={index}
+                      index={`${item._id}-${Date.now()}`}
+                      isActive={item.completed}
+                      onClick={() => completeTodo(item)}
+                      Ondelete={() => deleteItem(item)}
+                    >
+                      {item.title}
+                    </TodoItem>
+                  ))}
           </ul>
           <p className="my-2">
             {todos.filter((item) => !item.completed).length} state restant

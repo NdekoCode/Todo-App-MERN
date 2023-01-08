@@ -7,18 +7,34 @@ export function useFetch(url) {
   });
   useEffect(() => {
     (async () => {
-      const response = await fetch(url);
-      const responseData = await response.json();
-      if (response.ok) {
+      try {
+        const response = await fetch(url);
+        const responseData = await response.json();
+        console.log(responseData);
+        console.log(response.ok);
+        if (response.ok) {
+          setState((state) => ({
+            ...state,
+            items: responseData,
+            loading: false,
+          }));
+        } else {
+          setState((state) => ({
+            ...state,
+            items: { todos: [] },
+            loading: false,
+          }));
+        }
+      } catch (error) {
         setState((state) => ({
           ...state,
-          items: responseData,
+          items: { todos: [] },
           loading: false,
         }));
-      } else {
-        setState((state) => ({ ...state, loading: false }));
+        console.log(error);
       }
     })();
   }, [state.loading]);
+  console.log(state);
   return [state.items, state.loading];
 }

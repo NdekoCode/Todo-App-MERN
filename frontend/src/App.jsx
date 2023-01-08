@@ -1,4 +1,3 @@
-import { useState } from "react";
 import TodoApp from "./components/TodoApp";
 
 function App() {
