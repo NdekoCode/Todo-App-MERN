@@ -1,10 +1,10 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback } from "react";
 import UseTodoContext from "../libs/context/TodoContext";
 import TodoItem from "./TodoItem";
 
 const TodoApp = () => {
-  const { todos, loading, setTodos } = UseTodoContext();
-  const [newItem, setNewItem] = useState("");
+  const { todos, loading, setTodos, newItem, setNewItem, completeTodo } =
+    UseTodoContext();
   const addItem = () => {
     if (newItem.length > 2) {
       fetch("http://localhost:4500/api/v1/todos/add", {
