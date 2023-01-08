@@ -1,5 +1,6 @@
 import express from "express";
 import { todoRouter } from "./routes/todoRoutes.js";
+const baseURL = process.env.BASE_URL || "/api/v1";
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -17,8 +18,8 @@ app.use((req, res, next) => {
 
   next();
 });
-app.use("/todos", todoRouter);
-app.use("/", (req, res) => {
+app.use(baseURL + "/todos", todoRouter);
+app.use(baseURL + "/", (req, res) => {
   res.end("Bienvenus");
 });
 export default app;
