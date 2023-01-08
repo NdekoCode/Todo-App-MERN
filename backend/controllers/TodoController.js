@@ -47,24 +47,13 @@ export default class TodoController {
     return alert.danger("Erreur lors de la modification de la tache", 500);
   }
   deleteTodo(req, res) {
+    const alert = new Alert(req, res);
     if (req.params.id) {
       return TodoModel.findOneAndDelete(req.params.id).then(() =>
-        res.status(201).send({
-          alert: {
-            messages: "Tache supprimés avec succés",
-            type: "success",
-            statusCode: 201,
-          },
-        })
+        alert.success("Tache supprimés avec succés", 201)
       );
     }
-    return res.status(500).send({
-      alert: {
-        messages: "Echec lors de la suppression",
-        type: "danger",
-        statusCode: 500,
-      },
-    });
+    return alert.danger("Echec lors de la suppression", 500);
   }
   getTodos(req, res) {
     TodoModel.find((err, items) => {
