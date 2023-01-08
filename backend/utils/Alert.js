@@ -18,21 +18,21 @@ export default class Alert {
     });
   }
   danger(message, statusCode = 400) {
-    if (statusCode === 500 && process.env.NODE_ENV !== "development") {
+    if (statusCode === 500 && process.env.NODE_ENV === "production") {
       message = "Impossible d'afficher les information pour le moment";
     }
     return this.makeAlert(message, statusCode);
   }
 
   success(message, statusCode = 200, type = "success") {
-    return this.makeAlert(statusCode, message, type);
+    return this.makeAlert(message, statusCode, type);
   }
 
   warning(message, statusCode = 200, type = "warning") {
-    return this.makeAlert(statusCode, message, type);
+    return this.makeAlert(message, statusCode, type);
   }
 
   info(message, statusCode = 100, type = "info") {
-    return this.makeAlert(statusCode, message, type);
+    return this.makeAlert(message, statusCode, type);
   }
 }
