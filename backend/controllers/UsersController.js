@@ -40,15 +40,18 @@ export default class UsersControllers {
         "Seul le nom, le prenom, le mot de passe peut etre modifier"
       );
     }
-
-    const user = await UserModel.findByIdAndUpdate(id, bodyRequest);
-    if (!user) {
-      return alert.danger(
-        "Erreur lors de la modification de l'utilisateur",
-        404
-      );
+    try {
+      const user = await UserModel.findByIdAndUpdate(id, bodyRequest);
+      if (!user) {
+        return alert.danger(
+          "Erreur lors de la modification de l'utilisateur",
+          404
+        );
+      }
+      return alert.success("Utilisateur modifier avec succés", 201);
+    } catch (error) {
+      return alert.danger(error.message, 500);
     }
-    return alert.success("Utilisateur modifier avec succés", 201);
   }
   async deleteUser(req, res) {
     const alert = new Alert(req, res);
