@@ -3,7 +3,7 @@ export default class Alert {
     this.req = req;
     this.res = res;
     this.othersData = {};
-    this.field;
+    this.field = null;
   }
   setOtherData(otherData, field = null) {
     this.othersData = otherData;
