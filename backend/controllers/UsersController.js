@@ -91,15 +91,19 @@ export default class UsersControllers {
     if (!validator.isEmptyObject(validator.errors)) {
       return alert.danger(validator.errors["error"]);
     }
-    const user = await UserModel.findOne({ email: bodyRequest.email });
-    if (user) {
-      return alert.danger("L'utilisateur existe déjà", 409);
-    }
-    delete userData.confpassword;
-    userData.password = await hash(userData.password, 14);
-    const newUser = new UserModel(userData);
+    try {
+      const user = await UserModel.findOne({ email: bodyRequest.email });
+      if (user) {
+        return alert.danger("L'utilisateur existe déjà", 409);
+      }
+      delete userData.confpassword;
+      userData.password = await hash(userData.password, 14);
+      const newUser = new UserModel(userData);
 
-    await newUser.save();
-    return alert.success("Utilisateur enregister avec succés");
+      await newUser.save();
+      return alert.success("Utilisateur enregister avec succés", 201);
+    } catch (error) {
+      return alert.danger(error.message, 500);
+    }
   }
 }
