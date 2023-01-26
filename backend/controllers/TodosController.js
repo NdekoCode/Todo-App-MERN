@@ -94,14 +94,16 @@ export default class TodosController {
   async getTodos(req, res) {
     const todos = await TodoModel.find({}).sort({ createdAt: -1 }).exec();
 
-    return todos ? res.send({ todos }) : res.send({ todos: [] });
+    return res.status(200).json({ todos: todos || [] });
   }
   async getTodo(req, res) {
     const id = req.params.id;
     const alert = new Alert(req, res);
     try {
       const todo = await TodoModel.findById(id);
-      return todo ? res.json(todo) : alert.danger("Tache introuvable", 404);
+      return todo
+        ? res.status(200).json(todo)
+        : alert.danger("Tache introuvable", 404);
     } catch (error) {
       return alert.danger(error.message, 500);
     }
@@ -111,6 +113,6 @@ export default class TodosController {
     const todos = await TodoModel.find({ userId })
       .sort({ createdAt: -1 })
       .exec();
-    return res.status(200).json(todos || []);
+    return res.status(200).json({ todos: todos || [] });
   }
 }
