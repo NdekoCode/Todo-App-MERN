@@ -1,5 +1,6 @@
 import { TodoModel } from "../models/TodoModel.js";
 import Alert from "../utils/Alert.js";
+import Validators from "../utils/Validators.js";
 export default class TodosController {
   async addTodo(req, res) {
     const alert = new Alert(req, res);
@@ -48,7 +49,7 @@ export default class TodosController {
     };
     try {
       const todo = await TodoModel.findById(id);
-      if (req.user._id !== todo.userId) {
+      if (req.user._id.toString() !== todo.userId.toString()) {
         return alert.danger(
           "Vous n'avez pas le droit d'acceder à cette ressource",
           401
@@ -67,11 +68,11 @@ export default class TodosController {
     const alert = new Alert(req, res);
     const id = req.params.id;
     try {
-      const todo = await findById(id);
+      const todo = await TodoModel.findById(id);
       if (!todo) {
         return alert.danger("La tache n'existe pas", 404);
       }
-      if (todo.userId !== req.user._id) {
+      if (todo.userId.toString() !== req.user._id.toString()) {
         return alert.danger(
           "Vous n'avez pas le droit d'acceder à cette ressource",
           401
