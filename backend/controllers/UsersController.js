@@ -1,4 +1,5 @@
-import { hash } from "bcrypt";
+import { compare, hash } from "bcrypt";
+import jwt from "jsonwebtoken";
 import UserModel from "../models/UserModel.js";
 import Alert from "../utils/Alert.js";
 import Validators from "../utils/Validators.js";
@@ -102,6 +103,49 @@ export default class UsersControllers {
 
       await newUser.save();
       return alert.success("Utilisateur enregister avec succés", 201);
+    } catch (error) {
+      return alert.danger(error.message, 500);
+    }
+  }
+  async login(req, res) {
+    const alert = new Alert(req, res);
+    const validator = new Validators();
+    const bodyRequest = req.body;
+    const userData = {
+      email: bodyRequest.email,
+      password: bodyRequest.password,
+    };
+    validator.ValidateEmail(userData.email);
+    const valid = validator.validForm(userData);
+    if (!valid) {
+      return alert.danger("Veuillez remplir tous les champs");
+    }
+    if (!validator.isEmptyObject(validator.errors)) {
+      return alert.danger(validator.errors["error"]);
+    }
+    try {
+      const user = await UserModel.findOne({ email: userData.email });
+      if (!user) {
+        return alert.danger("Email ou mot de passe incorrect");
+      }
+
+      const password = await compare(userData.password, user.password);
+      if (!password) {
+        return alert.danger("Email ou mot de passe incorrect");
+      }
+      const TOKEN_SECRET_CODE = process.env.TOKEN_SECRET_CODE;
+      const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN;
+      const payload = {
+        userId: user._id,
+        email: user.email,
+      };
+      const expiresToken = {
+        expiresIn: JWT_EXPIRES_IN,
+      };
+      const token = jwt.sign(payload, TOKEN_SECRET_CODE, expiresToken);
+      res.header("auth-token", token);
+      alert.setOtherData({ ...payload, token }, "user");
+      return alert.success("Utilisateur connecter avec succés", 201);
     } catch (error) {
       return alert.danger(error.message, 500);
     }

@@ -72,4 +72,11 @@ export default class TodosController {
       return alert.danger(error.message, 500);
     }
   }
+  async getTodoUser(req, res) {
+    const userId = req.params.userId;
+    const todos = await TodoModel.find({ userId })
+      .sort({ createdAt: -1 })
+      .exec();
+    return res.status(200).json(todos || []);
+  }
 }
