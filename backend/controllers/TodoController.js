@@ -1,9 +1,8 @@
-import { TodoModel } from "../models/Todos.js";
+import { TodoModel } from "../models/TodoModel.js";
 import Alert from "../utils/Alert.js";
 export default class TodoController {
   async addTodo(req, res) {
     const alert = new Alert(req, res);
-    console.log(req.body);
     if (req.body) {
       const newTodos = {
         content: req.body.content,
