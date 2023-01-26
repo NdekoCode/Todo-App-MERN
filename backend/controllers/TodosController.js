@@ -46,18 +46,22 @@ export default class TodosController {
       completed: bodyRequest.completed,
       updatedAt: Date.now(),
     };
-    const todo = await TodoModel.findById(id);
-    if (req.user._id !== todo.userId) {
-      return alert.danger(
-        "Vous n'avez pas le droit d'acceder à cette ressource",
-        401
-      );
+    try {
+      const todo = await TodoModel.findById(id);
+      if (req.user._id !== todo.userId) {
+        return alert.danger(
+          "Vous n'avez pas le droit d'acceder à cette ressource",
+          401
+        );
+      }
+      const todoUpdate = await TodoModel.updateOne({ _id: id }, todoData);
+      if (!todoUpdate) {
+        return alert.danger("Erreur lors de la modification de la tache");
+      }
+      return alert.success("Tache modifier avec succés", 201);
+    } catch (error) {
+      return alert.danger(error.message, 500);
     }
-    const todoUpdate = await TodoModel.updateOne({ _id: id }, todoData);
-    if (!todoUpdate) {
-      return alert.danger("Erreur lors de la modification de la tache");
-    }
-    return alert.success("Tache modifier avec succés", 201);
   }
   async deleteTodo(req, res) {
     const alert = new Alert(req, res);
@@ -65,7 +69,7 @@ export default class TodosController {
     try {
       const todo = await findById(id);
       if (!todo) {
-        return alert.danger("La tache n'existe pas", 500);
+        return alert.danger("La tache n'existe pas", 404);
       }
       if (todo.userId !== req.user._id) {
         return alert.danger(
@@ -74,6 +78,8 @@ export default class TodosController {
         );
       }
       await TodoModel.deleteOne({ _id: id });
+
+      return alert.success("Tache supprimer avec succées");
     } catch (error) {
       return alert.danger(
         "Echec lors de la suppression, " + error.message,
