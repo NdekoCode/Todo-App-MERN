@@ -70,4 +70,20 @@ export default class UsersControllers {
       return alert.danger(error.message, 500);
     }
   }
+  async register(req, res) {
+    const bodyRequest = req.body;
+    const alert = new Alert(req, res);
+    const validator = new Validators();
+    const userData = {
+      firstName: bodyRequest.firstName,
+      lastName: bodyRequest.lastName,
+      email: bodyRequest.email,
+      password: bodyRequest.password,
+      confpassword: bodyRequest.confpassword,
+    };
+    const valid = validator.validForm(userData);
+    if (!valid) {
+      return alert.danger("Veuillez remplir tous les champs");
+    }
+  }
 }
