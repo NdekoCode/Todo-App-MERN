@@ -50,4 +50,17 @@ export default class UsersControllers {
     }
     return alert.success("Utilisateur modifier avec succés", 201);
   }
+  async deleteUser(req, res) {
+    const alert = new Alert(req, res);
+
+    const id = req.params.id;
+    const user = await UserModel.findByIdAndRemove(id);
+    if (!user) {
+      return alert.danger(
+        "Erreur lors de la suppression de l'utilisateur",
+        404
+      );
+    }
+    return alert.success("Utilisateur supprimer avec succés", 204);
+  }
 }
