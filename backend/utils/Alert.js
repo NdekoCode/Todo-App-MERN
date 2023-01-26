@@ -3,11 +3,27 @@ export default class Alert {
     this.req = req;
     this.res = res;
     this.othersData = {};
+    this.field;
   }
-  setOtherData(otherData) {
+  setOtherData(otherData, field = null) {
     this.othersData = otherData;
+    if (field) {
+      this.field = field;
+    }
   }
   makeAlert(message, statusCode, type = "danger") {
+    if (this.field && this.othersData) {
+      return this.res.status(statusCode).json({
+        alert: {
+          statusCode,
+          message,
+          type,
+        },
+        [this.field]: {
+          ...this.othersData,
+        },
+      });
+    }
     return this.res.status(statusCode).json({
       alert: {
         statusCode,

@@ -1,5 +1,6 @@
 import UserModel from "../models/UserModel.js";
 import Alert from "../utils/Alert.js";
+import Validators from "../utils/Validators.js";
 
 export default class UsersControllers {
   async getAllUsers(req, res) {
@@ -22,6 +23,50 @@ export default class UsersControllers {
       return alert.danger("Cet utilisateur n'existe pas");
     } catch (error) {
       const alert = new Alert(req, res);
+      return alert.danger(error.message, 500);
+    }
+  }
+  async updateUser(req, res) {
+    const id = req.params.id;
+    const bodyRequest = req.body;
+    const alert = new Alert(req, res);
+    const validator = new Validators();
+    const valid = validator.validForm(bodyRequest);
+    if (!valid) {
+      return alert.danger(validator.errors["error"]);
+    }
+    if (bodyRequest.email) {
+      return alert.danger(
+        "Seul le nom, le prenom, le mot de passe peut etre modifier"
+      );
+    }
+    try {
+      const user = await UserModel.findByIdAndUpdate(id, bodyRequest);
+      if (!user) {
+        return alert.danger(
+          "Erreur lors de la modification de l'utilisateur",
+          404
+        );
+      }
+      return alert.success("Utilisateur modifier avec succés", 201);
+    } catch (error) {
+      return alert.danger(error.message, 500);
+    }
+  }
+  async deleteUser(req, res) {
+    const alert = new Alert(req, res);
+
+    const id = req.params.id;
+    try {
+      const user = await UserModel.findByIdAndRemove(id);
+      if (!user) {
+        return alert.danger(
+          "Erreur lors de la suppression de l'utilisateur",
+          404
+        );
+      }
+      return alert.success("Utilisateur supprimer avec succés", 204);
+    } catch (error) {
       return alert.danger(error.message, 500);
     }
   }
