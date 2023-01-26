@@ -1,13 +1,21 @@
-import { model, Schema } from "mongoose";
+import { model, Schema, Types } from "mongoose";
 const TodoSchema = new Schema(
   {
-    content: {
+    title: {
       type: String,
       required: true,
+    },
+    description: {
+      type: String,
+      required: false,
     },
     completed: {
       type: Boolean,
       default: false,
+    },
+    userId: {
+      type: Types.ObjectId,
+      required: true,
     },
   },
   { timestamps: true }

@@ -1,6 +1,6 @@
-import TodoController from "../controllers/TodoController.js";
+import TodosController from "../controllers/TodosController.js";
 import router from "./router.js";
-const todoController = new TodoController();
+const todoController = new TodosController();
 router.get("/", todoController.getTodos);
 router.get("/:id", todoController.getTodo);
 router.post("/add", todoController.addTodo);
