@@ -1,4 +1,5 @@
 import express from "express";
+import { authMiddleware } from "./middlewares/auth.mid.js";
 import { todoRouter } from "./routes/todoRoutes.routes.js";
 import userRouter from "./routes/userRoute.routes.js";
 const baseURL = process.env.BASE_URL || "/api/v1";
@@ -19,7 +20,7 @@ app.use((req, res, next) => {
 
   next();
 });
-app.use(baseURL + "/todos", todoRouter);
+app.use(baseURL + "/todos", authMiddleware, todoRouter);
 app.use(baseURL + "/auth", userRouter);
 app.use(baseURL + "/", (req, res) => {
   res.end("Bienvenus");
