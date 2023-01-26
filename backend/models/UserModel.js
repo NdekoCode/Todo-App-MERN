@@ -20,6 +20,10 @@ const userSchema = new Schema({
     min: 6,
     max: 255,
   },
+  avatar: {
+    type: String,
+    required: false,
+  },
 });
 const UserModel = new model("user", userSchema);
 export default UserModel;

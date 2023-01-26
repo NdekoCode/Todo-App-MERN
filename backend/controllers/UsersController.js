@@ -1,3 +1,4 @@
+import { hash } from "bcrypt";
 import UserModel from "../models/UserModel.js";
 import Alert from "../utils/Alert.js";
 import Validators from "../utils/Validators.js";
@@ -81,16 +82,24 @@ export default class UsersControllers {
       password: bodyRequest.password,
       confpassword: bodyRequest.confpassword,
     };
-    console.log(bodyRequest);
     const valid = validator.validForm(userData);
     if (!valid) {
       return alert.danger("Veuillez remplir tous les champs");
     }
     validator.ValidateEmail(userData.email);
-    validator.ValidateEmail(userData.password, userData.confpassword);
+    validator.validPassword(userData.password, userData.confpassword);
     if (!validator.isEmptyObject(validator.errors)) {
       return alert.danger(validator.errors["error"]);
     }
+    const user = await UserModel.findOne({ email: bodyRequest.email });
+    if (user) {
+      return alert.danger("L'utilisateur existe déjà", 409);
+    }
+    delete userData.confpassword;
+    userData.password = await hash(userData.password, 14);
+    const newUser = new UserModel(userData);
+
+    await newUser.save();
     return alert.success("Utilisateur enregister avec succés");
   }
 }

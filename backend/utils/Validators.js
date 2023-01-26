@@ -124,16 +124,12 @@ export default class Validators {
    * @returns
    */
   ValidateEmail(value) {
-    if (!this.isStringEmpty(value)) {
-      const validRegex =
-        /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-
-      if (value.match(validRegex)) {
-        return true;
-      }
-      this.errors["error"] = "adresse e-mail invalide";
+    const validRegex =
+      /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+    if (value.match(validRegex)) {
+      return true;
     }
-    this.errors["error"] = "Entrer un e-mail valide";
+    this.errors["error"] = "adresse e-mail invalide";
     return this.isEmptyObject(this.errors);
   }
   validPassword(value, confPassword = undefined) {
