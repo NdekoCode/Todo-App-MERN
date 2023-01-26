@@ -4,31 +4,34 @@ import Validators from "../utils/Validators.js";
 export default class TodosController {
   async addTodo(req, res) {
     const alert = new Alert(req, res);
-    if (req.body) {
-      const newTodos = {
-        content: req.body.content,
-        completed: false,
-      };
-      try {
-        const todo = new TodoModel(newTodos);
-        console.log(todo);
-        const data = await TodoModel.findOne({ content: req.body.content });
-        if (!data) {
-          await todo.save();
-          return alert.success("Todos Ajouter avec succés", 201);
-        }
-
-        return alert.danger("La tache existe déjà", 409);
-      } catch (error) {
-        console.log(error);
-        return alert.danger(
-          "Erreur lors de l'enregistrement des données " + error.message,
-          500
-        );
-      }
+    const bodyRequest = req.body;
+    const validator = new Validators();
+    const valid = validator.validForm(bodyRequest);
+    if (!valid) {
+      return alert.danger(
+        "Veuillez remplir tous les champs " + validator.errors["error"]
+      );
     }
-
-    return alert.danger("Erreur lors de l'enregistrement des données", 400);
+    const todoData = {
+      title: bodyRequest.title,
+      description: bodyRequest.description,
+      completed: false,
+      userId: req.user._id,
+    };
+    try {
+      const data = await TodoModel.findOne({ title: todoData.title });
+      if (data) {
+        return alert.danger("La tache existe déjà", 409);
+      }
+      const todo = new TodoModel(todoData);
+      await todo.save();
+      return alert.success("Todos Ajouter avec succés", 201);
+    } catch (error) {
+      return alert.danger(
+        "Erreur lors de l'enregistrement des données " + error.message,
+        500
+      );
+    }
   }
   async updateTodo(req, res) {
     const id = req.params.id;
