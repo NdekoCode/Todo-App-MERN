@@ -1,5 +1,5 @@
 import express from "express";
-import { todoRouter } from "./routes/todoRoutes.js";
+import { todoRouter } from "./routes/todoRoutes.routes.js";
 const baseURL = process.env.BASE_URL || "/api/v1";
 const app = express();
 app.use(express.json());
