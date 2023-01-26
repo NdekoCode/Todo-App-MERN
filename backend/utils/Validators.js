@@ -124,7 +124,7 @@ export default class Validators {
    * @returns
    */
   ValidateEmail(value) {
-    if (!isStringEmpty(value)) {
+    if (!this.isStringEmpty(value)) {
       const validRegex =
         /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 
@@ -137,7 +137,7 @@ export default class Validators {
     return this.isEmptyObject(this.errors);
   }
   validPassword(value, confPassword = undefined) {
-    if (isStringEmpty(value) || value.length < 5) {
+    if (this.isStringEmpty(value) || value.length < 5) {
       this.errors["error"] =
         "Le mot de passe doit etre au moins de 5 caractères";
     }
@@ -152,6 +152,6 @@ export default class Validators {
         this.errors[field] = "Le champs est requis";
       }
     }
-    return isEmptyObject(errors);
+    return this.isEmptyObject(errors);
   }
 }

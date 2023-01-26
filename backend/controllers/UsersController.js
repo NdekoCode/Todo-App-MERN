@@ -83,9 +83,13 @@ export default class UsersControllers {
     };
     console.log(bodyRequest);
     const valid = validator.validForm(userData);
-    console.log(valid);
     if (!valid) {
       return alert.danger("Veuillez remplir tous les champs");
+    }
+    validator.ValidateEmail(userData.email);
+    validator.ValidateEmail(userData.password, userData.confpassword);
+    if (!validator.isEmptyObject(validator.errors)) {
+      return alert.danger(validator.errors["error"]);
     }
     return alert.success("Utilisateur enregister avec succés");
   }
