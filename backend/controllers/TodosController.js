@@ -59,14 +59,27 @@ export default class TodosController {
     }
     return alert.success("Tache modifier avec succés", 201);
   }
-  deleteTodo(req, res) {
+  async deleteTodo(req, res) {
     const alert = new Alert(req, res);
-    if (req.params.id) {
-      return TodoModel.findOneAndDelete(req.params.id).then(() =>
-        alert.success("Tache supprimés avec succés", 201)
+    const id = req.params.id;
+    try {
+      const todo = await findById(id);
+      if (!todo) {
+        return alert.danger("La tache n'existe pas", 500);
+      }
+      if (todo.userId !== req.user._id) {
+        return alert.danger(
+          "Vous n'avez pas le droit d'acceder à cette ressource",
+          401
+        );
+      }
+      await TodoModel.deleteOne({ _id: id });
+    } catch (error) {
+      return alert.danger(
+        "Echec lors de la suppression, " + error.message,
+        500
       );
     }
-    return alert.danger("Echec lors de la suppression", 500);
   }
   async getTodos(req, res) {
     const todos = await TodoModel.find({}).sort({ createdAt: -1 }).exec();
