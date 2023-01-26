@@ -123,26 +123,31 @@ export default class UsersControllers {
     if (!validator.isEmptyObject(validator.errors)) {
       return alert.danger(validator.errors["error"]);
     }
-    const user = await UserModel.findOne({ email: userData.email });
-    if (!user) {
-      return alert.danger("Email ou mot de passe incorrect");
-    }
+    try {
+      const user = await UserModel.findOne({ email: userData.email });
+      if (!user) {
+        return alert.danger("Email ou mot de passe incorrect");
+      }
 
-    const password = await compare(userData.password, user.password);
-    if (!password) {
-      return alert.danger("Email ou mot de passe incorrect");
-    }
-    const token = await jwt.sign(
-      {
+      const password = await compare(userData.password, user.password);
+      if (!password) {
+        return alert.danger("Email ou mot de passe incorrect");
+      }
+      const TOKEN_SECRET_CODE = process.env.TOKEN_SECRET_CODE;
+      const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN;
+      const payload = {
         userId: user._id,
         email: user.email,
-      },
-      process.env.SECRET_CODE,
-      {
-        expiresIn: "24h",
-      }
-    );
-    res.header("auth-token", token);
-    return alert.success("Utilisateur connecter avec succés", 201);
+      };
+      const expiresToken = {
+        expiresIn: JWT_EXPIRES_IN,
+      };
+      const token = jwt.sign(payload, TOKEN_SECRET_CODE, expiresToken);
+      res.header("auth-token", token);
+      alert.setOtherData({ ...payload, token }, "user");
+      return alert.success("Utilisateur connecter avec succés", 201);
+    } catch (error) {
+      return alert.danger(error.message, 500);
+    }
   }
 }
