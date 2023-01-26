@@ -1,5 +1,6 @@
 import UserModel from "../models/UserModel.js";
 import Alert from "../utils/Alert.js";
+import Validators from "../utils/Validators.js";
 
 export default class UsersControllers {
   async getAllUsers(req, res) {
@@ -24,5 +25,29 @@ export default class UsersControllers {
       const alert = new Alert(req, res);
       return alert.danger(error.message, 500);
     }
+  }
+  async updateUser(req, res) {
+    const id = req.params.id;
+    const bodyRequest = req.body;
+    const alert = new Alert(req, res);
+    const validator = new Validators();
+    const valid = validator.validForm(bodyRequest);
+    if (!valid) {
+      return alert.danger(validator.errors["error"]);
+    }
+    if (bodyRequest.email) {
+      return alert.danger(
+        "Seul le nom, le prenom, le mot de passe peut etre modifier"
+      );
+    }
+
+    const user = await UserModel.findByIdAndUpdate(id, bodyRequest);
+    if (!user) {
+      return alert.danger(
+        "Erreur lors de la modification de l'utilisateur",
+        404
+      );
+    }
+    return alert.success("Utilisateur modifier avec succés", 201);
   }
 }
