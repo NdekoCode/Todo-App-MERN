@@ -81,9 +81,12 @@ export default class UsersControllers {
       password: bodyRequest.password,
       confpassword: bodyRequest.confpassword,
     };
+    console.log(bodyRequest);
     const valid = validator.validForm(userData);
+    console.log(valid);
     if (!valid) {
       return alert.danger("Veuillez remplir tous les champs");
     }
+    return alert.success("Utilisateur enregister avec succés");
   }
 }

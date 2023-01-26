@@ -114,7 +114,7 @@ export default class Validators {
     } else {
       this.errors["error"] = "Veuillez completer tous les champs";
     }
-    return this.errors;
+    return this.isEmptyObject(this.errors);
   }
 
   /**
@@ -123,7 +123,7 @@ export default class Validators {
    * @param {Object} errors Le tableau qui va contenir les erreur s'il y en a
    * @returns
    */
-  ValidateEmail(value, errors = {}) {
+  ValidateEmail(value) {
     if (!isStringEmpty(value)) {
       const validRegex =
         /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
@@ -131,25 +131,25 @@ export default class Validators {
       if (value.match(validRegex)) {
         return true;
       }
-      errors["error"] = "adresse e-mail invalide";
+      this.errors["error"] = "adresse e-mail invalide";
     }
-    errors["error"] = "Entrer un e-mail valide";
-    return false;
+    this.errors["error"] = "Entrer un e-mail valide";
+    return this.isEmptyObject(this.errors);
   }
-  validPassword(value, confPassword = undefined, errors = {}) {
+  validPassword(value, confPassword = undefined) {
     if (isStringEmpty(value) || value.length < 5) {
-      errors["error"] = "Le mot de passe doit etre au moins de 5 caractères";
+      this.errors["error"] =
+        "Le mot de passe doit etre au moins de 5 caractères";
     }
     if (confPassword && value !== confPassword) {
-      errors["error"] = "Les deux mot de passe ne correspondent pas";
+      this.errors["error"] = "Les deux mot de passe ne correspondent pas";
     }
-    return this.isEmptyObject(errors);
+    return this.isEmptyObject(this.errors);
   }
   isValidUserFields(bodyUserRequest, validField) {
-    let errors = {};
     for (let field in bodyUserRequest) {
       if (!validField.includes(field)) {
-        errors[field] = "Le champs est requis";
+        this.errors[field] = "Le champs est requis";
       }
     }
     return isEmptyObject(errors);
