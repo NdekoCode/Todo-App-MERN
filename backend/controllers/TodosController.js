@@ -29,24 +29,35 @@ export default class TodosController {
 
     return alert.danger("Erreur lors de l'enregistrement des données", 400);
   }
-  updateTodo(req, res) {
+  async updateTodo(req, res) {
+    const id = req.params.id;
+    const bodyRequest = req.body;
     const alert = new Alert(req, res);
-    if (req.body && req.params.id) {
-      const todoUpdate = {
-        content: req.body.content,
-        completed: req.body.completed,
-        updatedAt: Date.now(),
-      };
-      return TodoModel.findByIdAndUpdate(req.params.id, todoUpdate)
-        .then(() => alert.success("Tache modifier avec succés", 201))
-        .catch((error) =>
-          alert.danger(
-            "Erreur lors de la modification de la tache " + error.message,
-            500
-          )
-        );
+    const validator = new Validators();
+    const valid = validator.validForm(bodyRequest);
+    if (!valid) {
+      return alert.danger(
+        "Veuillez remplir tous les champs " + validator.errors["error"]
+      );
     }
-    return alert.danger("Erreur lors de la modification de la tache", 500);
+    const todoData = {
+      title: bodyRequest.title,
+      description: bodyRequest.description,
+      completed: bodyRequest.completed,
+      updatedAt: Date.now(),
+    };
+    const todo = await TodoModel.findById(id);
+    if (req.user._id !== todo.userId) {
+      return alert.danger(
+        "Vous n'avez pas le droit d'acceder à cette ressource",
+        401
+      );
+    }
+    const todoUpdate = await TodoModel.updateOne({ _id: id }, todoData);
+    if (!todoUpdate) {
+      return alert.danger("Erreur lors de la modification de la tache");
+    }
+    return alert.success("Tache modifier avec succés", 201);
   }
   deleteTodo(req, res) {
     const alert = new Alert(req, res);
