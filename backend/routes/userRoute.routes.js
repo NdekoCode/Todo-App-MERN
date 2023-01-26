@@ -7,4 +7,5 @@ userRouter.get("/users/:id", userCTRL.getSingleUser);
 userRouter.put("/users/update/:id", userCTRL.updateUser);
 userRouter.delete("/users/delete/:id", userCTRL.deleteUser);
 userRouter.post("/register", userCTRL.register);
+userRouter.post("/login", userCTRL.login);
 export default userRouter;

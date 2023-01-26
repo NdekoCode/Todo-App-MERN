@@ -1,4 +1,5 @@
-import { hash } from "bcrypt";
+import { compare, hash } from "bcrypt";
+import jwt from "jsonwebtoken";
 import UserModel from "../models/UserModel.js";
 import Alert from "../utils/Alert.js";
 import Validators from "../utils/Validators.js";
@@ -105,5 +106,43 @@ export default class UsersControllers {
     } catch (error) {
       return alert.danger(error.message, 500);
     }
+  }
+  async login(req, res) {
+    const alert = new Alert(req, res);
+    const validator = new Validators();
+    const bodyRequest = req.body;
+    const userData = {
+      email: bodyRequest.email,
+      password: bodyRequest.password,
+    };
+    validator.ValidateEmail(userData.email);
+    const valid = validator.validForm(userData);
+    if (!valid) {
+      return alert.danger("Veuillez remplir tous les champs");
+    }
+    if (!validator.isEmptyObject(validator.errors)) {
+      return alert.danger(validator.errors["error"]);
+    }
+    const user = await UserModel.findOne({ email: userData.email });
+    if (!user) {
+      return alert.danger("Email ou mot de passe incorrect");
+    }
+
+    const password = await compare(userData.password, user.password);
+    if (!password) {
+      return alert.danger("Email ou mot de passe incorrect");
+    }
+    const token = await jwt.sign(
+      {
+        userId: user._id,
+        email: user.email,
+      },
+      process.env.SECRET_CODE,
+      {
+        expiresIn: "24h",
+      }
+    );
+    res.header("auth-token", token);
+    return alert.success("Utilisateur connecter avec succés", 201);
   }
 }
